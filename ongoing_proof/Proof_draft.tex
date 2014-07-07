@@ -1,0 +1,131 @@
+\documentclass{article}
+
+
+\RequirePackage{authblk}
+\RequirePackage{xargs}
+\RequirePackage[OT1]{fontenc}
+\RequirePackage{amsthm,amsmath,txfonts,bm,pifont,graphicx,bbm,enumitem}
+\RequirePackage[numbers]{natbib}
+\RequirePackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[ruled,vlined]{algorithm2e}
+\SetKwHangingKw{KwParameters}{parameters}
+\SetKwHangingKw{KwInit}{initialization}
+\SetKwHangingKw{KwIn}{input}
+
+
+\numberwithin{equation}{section}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+
+\theoremstyle{plain}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{plain}
+\newtheorem{convention}{Convention}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\theoremstyle{remark}
+\newtheorem{example}{Example}
+
+%\setlength{\parskip}{6pt}
+
+\newcommandx{\vt}[2][2=T]{\mathrm{v}_{#2}\{#1\}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\rme}{\mathrm{e}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\btheta}{\bm\theta}
+\newcommand{\Dfrac}[2]{{\displaystyle \frac{#1}{#2}}}
+\newcommand{\rmd}{\mathrm{d}}
+\setlength{\parindent}{0in}
+
+%%% parenthesage
+\newcommand{\pa}[1]{\left(#1\right)}
+\newcommand{\cro}[1]{\left[#1\right]}
+\newcommand{\ac}[1]{\left\{#1\right\}}
+
+\renewcommand{\liminf}{\mathop{\mathrm{liminf}}}
+%%%
+% notation moments Z
+\def\m{m}
+\def\mphi{\phi}
+
+
+\newenvironment{hyp}[1]{
+\begin{enumerate}[label={\sf(\textbf{#1}-\arabic*)},resume=hyp#1]\begin{sf}}
+{\end{sf}\end{enumerate}}
+
+\begin{document}
+
+\title{Dueling}
+
+
+%\author[1]{Christophe Giraud \thanks{christophe.giraud@math.u-psud.fr}}
+%\author[2]{Fran\c{c}ois Roueff\thanks{francois.roueff@telecom-paristech.fr}}
+%\author[2]{Andres Sanchez-Perez\thanks{andres.sanchez-perez@telecom-paristech.fr}}
+%\affil[1]{Universit\'e Paris Sud ; D\'epartement de Math\'ematiques}
+%\affil[2]{Institut Mines-T\'el\'ecom ; T\'el\'ecom ParisTech ; CNRS LTCI}
+
+\maketitle
+
+We define the set $T_{p}=\{2^{p-1},\ldots,2^{p}-1\}$. 
+\vspace{0.3cm}
+
+\begin{algorithm}[H] 
+\caption{Improved Doubler}
+\KwInit{$x_{1}$ fixed in $X$, $\mathcal{L}=\{x_{1}\}$, $\hat{f}_{0}=0$}
+$t\gets 1$\;
+$p\gets 1$\;
+\While{true}{
+\For{$j=1$ \KwTo $2^{p-1}$}{
+choose $x_{t}$ uniformly from $\mathcal{L}$\;
+$y_{t} \gets \textrm{advance}(S)$\;
+$\textrm{play}\left(x_{t};y_{t}\right)$, observe choice $b_{t}$\;
+$\textrm{feedback}\left(S; b_{t}+\hat{f}_{p-1}\right)$\;
+$t\gets t+1$\;
+}
+$\mathcal{L}$ the multi-set of arms played as $y_{t}$ in the last for-loop\;
+$\hat{f}_{p}\gets \hat{f}_{p}+\sum_{s\in T_{p}}b_{s}/2^{p-1}-1/2$\;
+$p\gets p+1$\;
+}
+\end{algorithm}
+\vspace{0.3cm}
+
+Observe that if $t\in T_{p}$
+
+\begin{eqnarray*}
+\E\left[b_{t}\left|\left\{y_{s},s\in T_{p-1}\right\}, y_{t}\right.\right] &=& \sum_{s\in T_{p-1}}\Dfrac{\mu\left(y_{t}\right)-\mu\left(y_{s}\right)+1}{2^{p-1}} = \Dfrac{\mu\left(y_{t}\right)+1}{2}-\sum_{s\in T_{p-1}}\Dfrac{\mu\left(y_{s}\right)}{2^{p-1}}\;,
+\end{eqnarray*}
+
+and that
+
+\begin{eqnarray*}
+\E\left[\sum_{s\in T_{p-1}}b_{s}/2^{p-2}-1/2\left|\bigcup_{r=p-2}^{p-1}\left\{y_{s},s\in T_{r}\right\}\right.\right] &=& \sum_{s\in T_{p-1}}\Dfrac{\mu\left(y_{s}\right)}{2^{p-1}}-\sum_{s\in T_{p-2}}\Dfrac{\mu\left(y_{s}\right)}{2^{p-2}}\;.
+\end{eqnarray*}
+
+Using the recurrence defining $\hat{f}_{p}$ we obtain
+
+\begin{eqnarray*}
+\E\left[b_{t}+\hat{f}_{p-1}\left|x_{1},\bigcup_{r=1}^{p-1}\left\{y_{s},s\in T_{r}\right\}, y_{t}\right.\right] &=& \Dfrac{\mu\left(y_{t}\right)-\mu\left(x_{1}\right)+1}{2}\;.
+\end{eqnarray*}
+
+Since the above right term is $\sigma(x_{1},y_{t})$- measurable we conclude that
+
+\begin{eqnarray*}
+\E\left[b_{t}+\hat{f}_{p-1}\left|x_{1},y_{t}\right.\right] &=& \Dfrac{\mu\left(y_{t}\right)-\mu\left(x_{1}\right)+1}{2}\;.
+\end{eqnarray*}
+ 
+
+\bibliographystyle{plain}
+\bibliography{allbib}
+
+\end{document}
