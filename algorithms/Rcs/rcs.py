@@ -102,6 +102,19 @@ class RCS():
 
                     self.theta[right_arm, left_arm] = 1 - self.theta[left_arm, right_arm]
 
+    def update_wins_matrix(self, chosen_left_arm, chosen_right_arm, better_arm):
+        """ update_wins_matrix() updating the wins matrix according to the arm value. """
+
+        if better_arm == "left":
+
+            self.wins[chosen_left_arm, chosen_right_arm] += 1
+
+        elif better_arm == "right":
+
+            self.wins[chosen_right_arm, chosen_left_arm] += 1
+
+        return
+
     def set_champion(self):
 
         n_arms = len(self.wins)
@@ -202,14 +215,6 @@ class RCS():
 
         return chosen_right_arm
 
-    def update(self, chosen_left_arm, chosen_right_arm, better_arm):
-
-        if better_arm == "left":
-            self.wins[chosen_left_arm, chosen_right_arm] += 1
-        elif better_arm == "right":
-            self.wins[chosen_right_arm, chosen_left_arm] += 1
-        return
-
     def chose_best_arm(self):
 
         n_arms = len(self.wins)
@@ -267,37 +272,49 @@ def choose_from_probability_vector(probability_vector):
     return index - 1
 
 
-def test_functionality(means, horizon):
+def run_rcs_algorithm(means, horizon):
+    """ run_rcs_algorithm() - This function runs the RUCB algorithm. """
 
+    # The number of arms.
     n_arms = len(means)
 
+    # Shuffling the arms
     random.shuffle(means)
 
+    # Initializing the the average reward vector.
     average_reward = [0]*horizon
 
+    # Initializing the regret vector.
     regret = [0]*horizon
 
+    # Initializing the cumulative average reward vector.
     cumulative_average_reward = [0]*horizon
 
+    # Initializing the cumulative regret vector.
     cumulative_regret = [0]*horizon
 
-    #arms = map(lambda (mu): FixedArm(mu), means)
+    # Assigning the arms.
     arms = map(lambda (mu): BernoulliArm(mu), means)
 
-    best_arm = np.argmax(means)
-
-    print "Best arm is {0}".format(best_arm)
-
+    # Constructing the RUCB algorithm object.
     algorithm = RCS(n_arms=n_arms, alpha=0.5)
 
+    # Initializing the algorithm.
     algorithm.initialize()
+
     for t in range(horizon):
+
+        # Selecting the arms.
         [chosen_left_arm, chosen_right_arm] = algorithm.select_arms(t+1)
 
+        # Obtaining the rewards.
         left_reward = arms[chosen_left_arm].draw()
 
         right_reward = arms[chosen_right_arm].draw()
 
+        # Choosing the better arm.
+
+        # Tie breaking rule.
         if left_reward == right_reward:
 
             better_arm = random.choice(["left", "right"])
@@ -310,8 +327,10 @@ def test_functionality(means, horizon):
 
             better_arm = "right"
 
-        algorithm.update(chosen_left_arm, chosen_right_arm, better_arm)
+        # Updating the wins matrix.
+        algorithm.update_wins_matrix(chosen_left_arm, chosen_right_arm, better_arm)
 
+        # Assigning the rewards and regrets.
         average_reward[t] = (right_reward + left_reward) / 2
 
         regret[t] = max(means) - average_reward[t]
@@ -325,11 +344,9 @@ def test_functionality(means, horizon):
 
             cumulative_regret[t] = regret[t] + cumulative_regret[t-1]
 
-    algorithms_choice = algorithm.chose_best_arm()
-
-    print "Algorithm's choise is: {0}".format(algorithms_choice)
-
+    # Returning the cumulative regret.
     return cumulative_regret
+
 
 
 def print_results(x_vector, y_vector):
@@ -338,15 +355,21 @@ def print_results(x_vector, y_vector):
     plt.show()
 
 
-def test_several_iterations(iterations, means, horizon):
+def run_several_iterations(iterations, means, horizon):
+    """ run_several_iterations() - This function runs several iterations of the RUCB algorithm."""
 
+    # Initializing the results vector.
     results = [0]*horizon
-    current_results = [0]*horizon
-    for test in range(iterations):
-        current_results = test_functionality(means, horizon)
+
+    for iteration in range(iterations):
+
+        # Running the algorithm for this iteration.
+        current_results = run_rcs_algorithm(means, horizon)
+
+        # Adding the regret.
         results = np.add(results, current_results)
 
-    return results
+    return results/(iterations +.0)
 
 if __name__ == '__main__':
     my_means = [0.1, 0.9, 0.7, 0.3, 0.4]

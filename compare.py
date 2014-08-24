@@ -1,6 +1,7 @@
 import algorithms.rucb.rucb as rucb
 import algorithms.Sparring.sparring as sparring
 import algorithms.Doubler.doubler as doubler
+import algorithms.Rcs.rcs as rcs
 import matplotlib.pyplot as plt
 import random
 
@@ -10,13 +11,16 @@ random.seed(1)
 means = [0.1, 0.96, 0.8, 0.30, 0.7, 0.4]
 
 # The horizon
-horizon = 4096
+horizon = 4096*2
 
 # The number of iterations for this test.
 iterations = 20
 
 # The RUCB algorithm results.
 rucb_results = rucb.run_several_iterations(iterations, means, horizon)
+
+# The RCS algorithm results.
+rcs_results = rcs.run_several_iterations(iterations, means, horizon)
 
 # The Sparring algorithm results.
 sparring_results = sparring.run_several_iterations(iterations, means, horizon)
@@ -32,6 +36,8 @@ T = range(horizon)
 plt.plot(T, rucb_results, 'r--', label="RUCB")
 plt.plot(T, sparring_results, 'b--', label="Sparring")
 plt.plot(T, doubler_results, 'g--', label="Doubler")
-plt.plot(T, improved_doubler_results, 'm--', label="Improved Doubler")
+plt.plot(T, rcs_results, 'm--', label="RCS")
+plt.plot(T, improved_doubler_results, 'k--', label="Improved Doubler")
+
 plt.legend(loc='upper left', shadow=True)
 plt.show()
