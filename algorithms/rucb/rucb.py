@@ -196,7 +196,7 @@ class RUCB():
         # Arms that are no in the Best set.
         inverted_b_vector = np.logical_not(self.b_vector)
 
-        # Arms that are only in the champoins vector.
+        # Arms that are only in the champions vector.
         arms_only_in_c = np.bitwise_and(self.c_vector, inverted_b_vector)
 
         # Calculating the probability vector according to the RUCB algorithm.
