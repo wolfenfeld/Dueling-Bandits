@@ -375,6 +375,6 @@ if __name__ == '__main__':
     my_means = [0.1, 0.9, 0.7, 0.3, 0.4]
     my_horizon = 1000
     my_iterations = 10
-    average_results = np.divide(test_several_iterations(my_iterations, my_means, my_horizon),
+    average_results = np.divide(run_several_iterations(my_iterations, my_means, my_horizon),
                                 float(my_iterations))
     print_results(range(my_horizon),average_results)
