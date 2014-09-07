@@ -45,21 +45,22 @@ def run_doubler_algorithm(means, log_horizon):
         cumulative regret. """
 
     # The L set (initialized to [1,0,0,...,0])
-    my_left_set = [False]*len(means)
-    my_left_set[0] = 1
+    my_left_set = [True]*len(means)
+
+    hot_start_plays = 7
 
     # The number of arms
     n_arms = len(means)
 
     # Shuffling the means vector.
-    random.shuffle(means)
+    #random.shuffle(means)
 
     # Assigning Bernoulli arms
     arms = map(lambda (mu): BernoulliArm(mu), means)
 
     # Assigning the black-boxes with the UCB 3 algorithm
-    #left_black_box = UCB3(counts=[], p_counts=log_horizon, values=[], alpha=0.5)
-    right_black_box = UCB3(counts=[], values=[], alpha=0.75)
+    right_black_box = UCB3(counts=[], values=[], log_horizon=log_horizon, values_in_epoch=[], plays_in_epoch=[],
+                           alpha=0.25, hot_start_plays=hot_start_plays)
 
     # Initializing the black-boxes.
     right_black_box.initialize(n_arms)
@@ -76,18 +77,14 @@ def run_doubler_algorithm(means, log_horizon):
     # The record of all the arms used in each epoch
     arms_used = np.zeros([n_arms, log_horizon+1])
 
-    # The Doubler algorithm :
-    for current_p in range(1, log_horizon+1):
+    # The algorithm :
+    for current_p in range(6, log_horizon+1):
 
         # The arms used in this current round
         arms_histogram = [0]*n_arms
 
         # This round time interval.
         current_time_interval = time_interval(current_p)
-
-        # Initializing the right black-box (S).
-
-        right_black_box.initialize(n_arms)
 
         for t in current_time_interval:
 
@@ -99,10 +96,7 @@ def run_doubler_algorithm(means, log_horizon):
 
             # Choosing an arm using the right black box.
             # (I also take in consideration the arms used in the current epoch)
-            right_arm = right_black_box.select_arm(current_p, t, arms_used)
-
-            # Updating the record of used arms
-            arms_used[right_arm, current_p] += 1
+            right_arm = right_black_box.select_arm(current_p, t)
 
             # Updating the histogram of the current epoch
             arms_histogram[right_arm] += 1
@@ -116,12 +110,12 @@ def run_doubler_algorithm(means, log_horizon):
             observed_b[t] = observe_b_t(current_left_reward, current_right_reward)
 
             # Updating the right black-box with b_t and the bonus
-            right_black_box.update(right_arm, observed_b[t]+right_black_box.calculate_bonus(current_p, t, arms_used, right_arm))
+            right_black_box.update(right_arm, observed_b[t], current_p)
 
             # Assigning the average reward.
             average_reward[t] = float(current_left_reward + current_right_reward) / 2
 
-            print "arms: {0}, {1}".format(left_arm, right_arm)
+            #print "arms: {0}, {1}".format(left_arm, right_arm)
             # Assigning the regret
             regret[t] = max(means) - average_reward[t]
 
