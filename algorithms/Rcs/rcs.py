@@ -347,8 +347,6 @@ def run_rcs_algorithm(means, horizon):
     # Returning the cumulative regret.
     return cumulative_regret
 
-
-
 def print_results(x_vector, y_vector):
 
     plt.plot(x_vector, y_vector, 'bs')

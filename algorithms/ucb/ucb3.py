@@ -28,22 +28,20 @@ class UCB3():
         self.plays_in_epoch = np.zeros([n_arms, self.log_horizon+1])
         return
 
-    def calculate_bonus(self, p, t, arm):
+    def calculate_bonus(self, p, t, arm, hot_start_shift_p):
         inverse_sum = 0
         for n_i in self.plays_in_epoch[arm, :]:
             if n_i > 0:
                 inverse_sum += 1/(n_i+.0)
 
-        return math.sqrt(self.alpha*math.log(t)*inverse_sum/(p**2+.0))
+        return math.sqrt(self.alpha*math.log(t)*inverse_sum/((p-hot_start_shift_p+1)**2+.0))
 
-    def select_arm(self, p, t):
+    def select_arm(self, p, t, hot_start_shift_p):
 
         n_arms = len(self.counts)
 
         for arm in range(n_arms):
             if self.plays_in_epoch[arm, p] < self.hot_start_plays:
-
-            # if sum(arms_used[arm, :]) < 1:
                 return arm
 
         ucb_values = [0.0 for arm in range(n_arms)]
@@ -51,18 +49,15 @@ class UCB3():
 
         for arm in range(n_arms):
 
-            bonus[arm] = self.calculate_bonus(p, t, arm)
+            bonus[arm] = self.calculate_bonus(p, t, arm, hot_start_shift_p)
 
             ucb_values[arm] = self.values[arm] + bonus[arm]
 
         return ind_max(ucb_values)
 
-    def update(self, chosen_arm, reward, p):
+    def update(self, chosen_arm, new_value, p):
 
         self.plays_in_epoch[chosen_arm, p] += 1
-        self.values_in_epoch[chosen_arm, p] += reward
-
-        new_value = self.calculate_value(chosen_arm, p)
 
         self.values[chosen_arm] = new_value
 
@@ -72,8 +67,8 @@ class UCB3():
 
         average_of_averages = 0
 
-        for i in range(p+1):
+        for i in range(self.log_horizon+1):
             if self.plays_in_epoch[arm, i] != 0:
-                average_of_averages += (self.values_in_epoch[arm, i] / (self.plays_in_epoch[arm, i]+.0))/(p+.0)
+                average_of_averages += (self.values_in_epoch[arm, i] / (self.plays_in_epoch[arm, i]+.0))/(p-6.0)
 
         return average_of_averages
