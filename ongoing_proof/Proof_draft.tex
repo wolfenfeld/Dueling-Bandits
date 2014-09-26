@@ -65,8 +65,9 @@
 {\end{sf}\end{enumerate}}
 
 \begin{document}
+\sloppy
 
-\title{Dueling}
+\title{Dueling bandits}
 
 
 %\author[1]{Christophe Giraud \thanks{christophe.giraud@math.u-psud.fr}}
@@ -77,7 +78,7 @@
 
 \maketitle
 
-We define the set $T_{p}=\{2^{p-1},\ldots,2^{p}-1\}$. 
+We define the set $T_{p}=\{2^{p-1},\ldots,2^{p}-1\}=\{s\in\N: \lfloor\log_{2}s\rfloor=p-1\}$. 
 \vspace{0.3cm}
 
 \begin{algorithm}[H] 
@@ -112,18 +113,39 @@ and that
 \E\left[\sum_{s\in T_{p-1}}b_{s}/2^{p-2}-1/2\left|\bigcup_{r=p-2}^{p-1}\left\{y_{s},s\in T_{r}\right\}\right.\right] &=& \sum_{s\in T_{p-1}}\Dfrac{\mu\left(y_{s}\right)}{2^{p-1}}-\sum_{s\in T_{p-2}}\Dfrac{\mu\left(y_{s}\right)}{2^{p-2}}\;.
 \end{eqnarray*}
 
-Using the recurrence defining $\hat{f}_{p}$ we obtain
+Let us denote $f_{t}=b_{t}+\hat{f}_{p-1}=b_{t}+\sum_{r=1}^{\lfloor\log_{2}t\rfloor}\sum_{s\in T_{r}}b_{s}/2^{r-1}-\lfloor\log_{2}t\rfloor/2$ the feedback that we introduce in $S$. Using the recurrence defining $\hat{f}_{p}$ we obtain
 
 \begin{eqnarray*}
-\E\left[b_{t}+\hat{f}_{p-1}\left|x_{1},\bigcup_{r=1}^{p-1}\left\{y_{s},s\in T_{r}\right\}, y_{t}\right.\right] &=& \Dfrac{\mu\left(y_{t}\right)-\mu\left(x_{1}\right)+1}{2}\;.
+\E\left[f_{t}\left|x_{1},\bigcup_{r=1}^{p-1}\left\{y_{s},s\in T_{r}\right\}, y_{t}\right.\right] &=& \Dfrac{\mu\left(y_{t}\right)-\mu\left(x_{1}\right)+1}{2}\;.
 \end{eqnarray*}
 
 Since the above right term is $\sigma(x_{1},y_{t})$- measurable we conclude that
 
 \begin{eqnarray*}
-\E\left[b_{t}+\hat{f}_{p-1}\left|x_{1},y_{t}\right.\right] &=& \Dfrac{\mu\left(y_{t}\right)-\mu\left(x_{1}\right)+1}{2}\;.
+\E\left[f_{t}\left|x_{1},y_{t}\right.\right] &=& \Dfrac{\mu\left(y_{t}\right)-\mu\left(x_{1}\right)+1}{2}\;.
 \end{eqnarray*}
- 
+
+Let $y_{t_{1}}=\ldots=y_{t_{k}}$ and let $f=\sum_{j=1}^{k}f_{t_{j}}/k$. Observe that $f=\sum_{s=1}^{t_{k}}a_{s}b_{s}/t_{k}-\sum_{j=1}^{k}\log_{2}t_{j}/2k$ with $a_{s}\in[0,A_{s}]$. We will later specify this bound. Since the $a_{s}b_{s}$ are independent and $\PP[a_{s}b_{s}\in[0,A_{s}]]=1$ we can apply the Hoeffding's inequality:
+\begin{eqnarray*}
+\PP\left[f-\E\left[f\right]\geq\epsilon\left|x_{1},y_{t_{1}}=\ldots=y_{t_{k}}\right.\right]\leq \exp\left(-\frac{2t_{k}^{2}\epsilon^{2}}{\sum_{s=1}^{t_{k}}A_{s}^{2}}\right)
+\end{eqnarray*}
+
+Assume the convention $t_{0}=1$ and set $S_{j}=\{s\in\N:2^{\lfloor\log_{2} t_{j-1}\rfloor}\leq s<2^{\lfloor\log_{2} t_{j}\rfloor}\}$ for $j=1,\ldots,k$ and $S_{k+1}=\{s\in\N:2^{\lfloor\log_{2} t_{k}\rfloor}\leq s<t_{k}\}$. For each $1\leq j\leq k+1$, $s\in S_{j}$, $A_{s}=t_{k}((k-j+1)/2^{\lfloor\log_{2} s\rfloor}+1)/k$ if $s=t_{i}$ for some $1\leq i<j$ and $A_{s}=t_{k}(k-j+1)/(2^{\lfloor\log_{2} s\rfloor}k)$ otherwise. We say that $t_{j}\in S_{t(j)}$. The function $t$ is obviously non decreasing, $t(j)\geq j+1$ and $t(k)=k+1$.
+
+\begin{multline*}
+\frac{k^{2}}{t_{k}^{2}}\sum\limits_{s=1}^{t_{k}}A_{s}^{2} = \sum\limits_{j=1}^{k+1}\sum\limits_{s\in S_{j}}\frac{(k-j+1)^{2}}{2^{2\lfloor\log_{2} s\rfloor}}+\sum\limits_{j=1}^{k}\frac{k-t(j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}}+k = \\ \sum\limits_{j=1}^{k}(k-j+1)^{2}\left(\frac{1}{2^{\lfloor\log_{2} t_{j-1}\rfloor+1}}-\frac{1}{2^{\lfloor\log_{2} t_{j}\rfloor+1}}\right)+\sum\limits_{j=1}^{k}\frac{4(k-t(j))+4}{2^{\lfloor\log_{2} t_{j}\rfloor+1}}+k \\
+= \frac{k^{2}}{2}-\sum\limits_{j=1}^{k}\frac{2(k-j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor+1}} +\sum\limits_{j=1}^{k}\frac{4(k-t(j))+4}{2^{\lfloor\log_{2} t_{j}\rfloor+1}}+k \;.
+\end{multline*}
+
+This implies that 
+
+\begin{eqnarray*}
+k^{2} \geq \frac{k^{2}}{2}+\sum\limits_{j=1}^{k}\frac{2(k-j)-1}{2^{\lfloor\log_{2} t_{j}\rfloor+1}}+k \geq \frac{k^{2}}{t_{k}^{2}}\sum\limits_{s=1}^{t_{k}}A_{s}^{2} \geq \frac{k^{2}}{2}-\sum\limits_{j=1}^{k}\frac{2(k-j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor+1}} \geq \frac{k^{2}}{2}\left(1-\frac{1}{t_{k}}\right) \;.
+\end{eqnarray*}
+
+To obtain the convergence of Improved Doubler using UCB at the same rate as UCB we need that $\sum_{s=1}^{t_{k}}A_{s}^{2}=O(t_{k}^{2}/k)$, but we just showed that it is not possible. 
+
+
 
 \bibliographystyle{plain}
 \bibliography{allbib}
