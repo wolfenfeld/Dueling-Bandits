@@ -1,12 +1,5 @@
 import math
 import numpy as np
-from scipy.stats import hmean
-
-
-def ind_max(x):
-    m = max(x)
-
-    return x.index(m)
 
 
 class UCB3():
@@ -21,9 +14,10 @@ class UCB3():
         return
 
     def initialize(self, n_arms):
-        self.counts = [0 for col in range(n_arms)]
 
-        self.values = [0.0 for col in range(n_arms)]
+        self.counts = np.zeros(n_arms)
+
+        self.values = np.zeros(n_arms)
         self.values_in_epoch = np.zeros([n_arms, self.log_horizon+1])
         self.plays_in_epoch = np.zeros([n_arms, self.log_horizon+1])
         return
@@ -44,8 +38,8 @@ class UCB3():
             if self.plays_in_epoch[arm, p] < self.hot_start_plays:
                 return arm
 
-        ucb_values = [0.0 for arm in range(n_arms)]
-        bonus = [0.0 for arm in range(n_arms)]
+        ucb_values = np.zeros(n_arms)
+        bonus = np.zeros(n_arms)
 
         for arm in range(n_arms):
 
@@ -53,7 +47,7 @@ class UCB3():
 
             ucb_values[arm] = self.values[arm] + bonus[arm]
 
-        return ind_max(ucb_values)
+        return np.argmax(ucb_values)
 
     def update(self, chosen_arm, new_value, p):
 
@@ -62,13 +56,3 @@ class UCB3():
         self.values[chosen_arm] = new_value
 
         return
-
-    def calculate_value(self, arm, p):
-
-        average_of_averages = 0
-
-        for i in range(self.log_horizon+1):
-            if self.plays_in_epoch[arm, i] != 0:
-                average_of_averages += (self.values_in_epoch[arm, i] / (self.plays_in_epoch[arm, i]+.0))/(p-6.0)
-
-        return average_of_averages

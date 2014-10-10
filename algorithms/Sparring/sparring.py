@@ -90,7 +90,7 @@ def run_several_iterations(iterations, means, horizon):
     for iteration in range(iterations):
 
         # The current cumulative regret.
-        results = np.add(results, run_sparring_algorithm(means, horizon))
+        results = np.add(results, run_sparring_algorithm(means[:, iteration], horizon))
 
     # Returning the average cumulative regret.
     return results/(iterations +.0)
