@@ -125,26 +125,37 @@ Since the above right term is $\sigma(x_{1},y_{t})$- measurable we conclude that
 \E\left[f_{t}\left|x_{1},y_{t}\right.\right] &=& \Dfrac{\mu\left(y_{t}\right)-\mu\left(x_{1}\right)+1}{2}\;.
 \end{eqnarray*}
 
-Let $y_{t_{1}}=\ldots=y_{t_{k}}$ and let $f=\sum_{j=1}^{k}f_{t_{j}}/k$. Observe that $f=\sum_{s=1}^{t_{k}}a_{s}b_{s}/t_{k}-\sum_{j=1}^{k}\log_{2}t_{j}/2k$ with $a_{s}\in[0,A_{s}]$. We will later specify this bound. Since the $a_{s}b_{s}$ are independent and $\PP[a_{s}b_{s}\in[0,A_{s}]]=1$ we can apply the Hoeffding's inequality:
+Let $y_{t_{1}}=\ldots=y_{t_{k}}$ and let $f=\sum_{j=1}^{k}f_{t_{j}}/k$. 
+
+
+Observe that $f=\sum_{s=1}^{t_{k}}a_{s}b_{s}/t_{k}-\sum_{j=1}^{k}\log_{2}t_{j}/2k$ with $a_{s}\in[0,A_{s}]$. We will later specify this bound. Since the $a_{s}b_{s}$ are independent and $\PP[a_{s}b_{s}\in[0,A_{s}]]=1$ we can apply the Hoeffding's inequality:
 \begin{eqnarray*}
-\PP\left[f-\E\left[f\right]\geq\epsilon\left|x_{1},y_{t_{1}}=\ldots=y_{t_{k}}\right.\right]\leq \exp\left(-\frac{2t_{k}^{2}\epsilon^{2}}{\sum_{s=1}^{t_{k}}A_{s}^{2}}\right)
+\PP\left[f-\E\left[f\right]\geq\varepsilon\left|x_{1},y_{t_{1}}=\ldots=y_{t_{k}}\right.\right]\leq \exp\left(-\frac{2t_{k}^{2}\varepsilon^{2}}{\sum_{s=1}^{t_{k}}A_{s}^{2}}\right)
 \end{eqnarray*}
 
-Assume the convention $t_{0}=1$ and set $S_{j}=\{s\in\N:2^{\lfloor\log_{2} t_{j-1}\rfloor}\leq s<2^{\lfloor\log_{2} t_{j}\rfloor}\}$ for $j=1,\ldots,k$ and $S_{k+1}=\{s\in\N:2^{\lfloor\log_{2} t_{k}\rfloor}\leq s<t_{k}\}$. For each $1\leq j\leq k+1$, $s\in S_{j}$, $A_{s}=t_{k}((k-j+1)/2^{\lfloor\log_{2} s\rfloor}+1)/k$ if $s=t_{i}$ for some $1\leq i<j$ and $A_{s}=t_{k}(k-j+1)/(2^{\lfloor\log_{2} s\rfloor}k)$ otherwise. We say that $t_{j}\in S_{t(j)}$. The function $t$ is obviously non decreasing, $t(j)\geq j+1$ and $t(k)=k+1$.
+Assume the convention $t_{0}=1$ and set $S_{j}=\{s\in\N:2^{\lfloor\log_{2} t_{j-1}\rfloor}\leq s<2^{\lfloor\log_{2} t_{j}\rfloor}\}$ for $j=1,\ldots,k$ and $S_{k+1}=\{s\in\N:2^{\lfloor\log_{2} t_{k}\rfloor}\leq s\leq t_{k}\}$. For each $1\leq j\leq k+1$, $s\in S_{j}$, $A_{s}=t_{k}((k-j+1)/2^{\lfloor\log_{2} s\rfloor}+1)/k$ if $s=t_{i}$ for some $1\leq i<j$ and $A_{s}=t_{k}(k-j+1)/(2^{\lfloor\log_{2} s\rfloor}k)$ otherwise. We say that $t_{j}\in S_{t(j)}$. The function $t$ is obviously non decreasing, $k+1=t(k)\geq t(j)\geq j+1$.
 
 \begin{multline*}
-\frac{k^{2}}{t_{k}^{2}}\sum\limits_{s=1}^{t_{k}}A_{s}^{2} = \sum\limits_{j=1}^{k+1}\sum\limits_{s\in S_{j}}\frac{(k-j+1)^{2}}{2^{2\lfloor\log_{2} s\rfloor}}+\sum\limits_{j=1}^{k}\frac{k-t(j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}}+k = \\ \sum\limits_{j=1}^{k}(k-j+1)^{2}\left(\frac{1}{2^{\lfloor\log_{2} t_{j-1}\rfloor+1}}-\frac{1}{2^{\lfloor\log_{2} t_{j}\rfloor+1}}\right)+\sum\limits_{j=1}^{k}\frac{4(k-t(j))+4}{2^{\lfloor\log_{2} t_{j}\rfloor+1}}+k \\
-= \frac{k^{2}}{2}-\sum\limits_{j=1}^{k}\frac{2(k-j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor+1}} +\sum\limits_{j=1}^{k}\frac{4(k-t(j))+4}{2^{\lfloor\log_{2} t_{j}\rfloor+1}}+k \;.
+\frac{k^{2}}{t_{k}^{2}}\sum\limits_{s=1}^{t_{k}}A_{s}^{2} = \sum\limits_{j=1}^{k+1}\sum\limits_{s\in S_{j}}\frac{(k-j+1)^{2}}{2^{2\lfloor\log_{2} s\rfloor}}+\sum\limits_{j=1}^{k}\frac{k-t(j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}}+k = \\ \sum\limits_{j=1}^{k}(k-j+1)^{2}\left(\frac{1}{2^{\lfloor\log_{2} t_{j-1}\rfloor-1}}-\frac{1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}}\right)+\sum\limits_{j=1}^{k}\frac{k-t(j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}}+k = \\
+2k^{2}-\sum\limits_{j=1}^{k}\frac{2(k-j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}} +\sum\limits_{j=1}^{k}\frac{k-t(j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}}+k \;.
 \end{multline*}
 
 This implies that 
 
-\begin{eqnarray*}
-k^{2} \geq \frac{k^{2}}{2}+\sum\limits_{j=1}^{k}\frac{2(k-j)-1}{2^{\lfloor\log_{2} t_{j}\rfloor+1}}+k \geq \frac{k^{2}}{t_{k}^{2}}\sum\limits_{s=1}^{t_{k}}A_{s}^{2} \geq \frac{k^{2}}{2}-\sum\limits_{j=1}^{k}\frac{2(k-j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor+1}} \geq \frac{k^{2}}{2}\left(1-\frac{1}{t_{k}}\right) \;.
-\end{eqnarray*}
+\begin{multline*}
+3k^{2} \geq 2k^{2}-\sum\limits_{j=1}^{k}\frac{k-j+1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}}+k \geq \frac{k^{2}}{t_{k}^{2}}\sum\limits_{s=1}^{t_{k}}A_{s}^{2}\geq  \\  2k^{2}-\sum\limits_{j=1}^{k}\frac{2(k-j)+1}{2^{\lfloor\log_{2} t_{j}\rfloor-1}}+k \geq 2k^{2}\left(1-\frac{1}{2^{\lfloor\log_{2} t_{1}\rfloor}}\right)+k \;.
+\end{multline*}
 
 To obtain the convergence of Improved Doubler using UCB at the same rate as UCB we need that $\sum_{s=1}^{t_{k}}A_{s}^{2}=O(t_{k}^{2}/k)$, but we just showed that it is not possible. 
 
+%Then
+%\begin{eqnarray*}
+%\PP\left[f-\E\left[f\right]\geq\epsilon\left|x_{1},y_{t_{1}}=\ldots=y_{t_{k}}\right.\right]\leq \exp\left(-\frac{2}{3}\varepsilon^{2}\right)
+%\end{eqnarray*}
+%
+%\begin{eqnarray*}
+%\PP\left[\left(2\right)\right]\leq \sum\limits_{\rho_{i}=1}^{t}\exp\left(-\frac{\beta}{3}\frac{\log t}{\rho_{i}}\right)
+%\end{eqnarray*}
 
 
 \bibliographystyle{plain}
